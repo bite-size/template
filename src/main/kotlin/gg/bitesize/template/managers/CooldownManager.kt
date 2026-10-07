@@ -29,11 +29,17 @@ object CooldownManager {
         config = YamlConfiguration.loadConfiguration(file)
     }
 
+    // cooldowns.yml is only created once a plugin actually uses persistent cooldowns
+    private fun persistentConfig(): YamlConfiguration {
+        if (!::config.isInitialized) loadConfig()
+        return config
+    }
+
     fun setCooldown(player: Player, cooldownName: String, duration: Long, unit: TimeUnit, persistent: Boolean = false) {
         val expiresAt = System.currentTimeMillis() + unit.toMillis(duration)
 
         if (persistent) {
-            config.set("${player.uniqueId}.$cooldownName", expiresAt)
+            persistentConfig().set("${player.uniqueId}.$cooldownName", expiresAt)
             savePersistent()
         } else {
             val key = "${player.uniqueId}_$cooldownName"
@@ -43,7 +49,7 @@ object CooldownManager {
 
     fun isOnCooldown(player: Player, cooldownName: String, isPersistent: Boolean = false): Boolean {
         val expiresAt = if (isPersistent) {
-            config.getLong("${player.uniqueId}.$cooldownName", 0)
+            persistentConfig().getLong("${player.uniqueId}.$cooldownName", 0)
         } else {
             cache.getIfPresent("${player.uniqueId}_$cooldownName") ?: 0
         }
@@ -53,7 +59,7 @@ object CooldownManager {
 
     fun getRemainingFormatted(player: Player, cooldownName: String, isPersistent: Boolean = false): String {
         val expiresAt = if (isPersistent) {
-            config.getLong("${player.uniqueId}.$cooldownName", 0)
+            persistentConfig().getLong("${player.uniqueId}.$cooldownName", 0)
         } else {
             cache.getIfPresent("${player.uniqueId}_$cooldownName") ?: 0
         }
@@ -91,7 +97,11 @@ object CooldownManager {
     fun shutdown() {
         cache.invalidateAll()
         cache.cleanUp()
-        savePersistent()
+
+        // Persistent storage only exists once a persistent cooldown has been used
+        if (::config.isInitialized) {
+            savePersistent()
+        }
     }
 
 }

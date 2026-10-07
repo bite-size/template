@@ -23,8 +23,6 @@ class Main : JavaPlugin() {
     }
 
     override fun onDisable() {
-        ConfigManager.saveConfigs()
-
         CommandManager.shutdown()
 
         CooldownManager.shutdown()
