@@ -1,0 +1,9 @@
+* text=auto
+
+# Shell scripts must keep LF, or ./gradlew fails in Git Bash and on Linux hosts
+gradlew text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+
+*.jar binary
+*.png binary

@@ -19,7 +19,6 @@ class Main : JavaPlugin() {
         ConfigManager.loadConfigs()
 
         CommandManager.registerAll()
-        CommandManager.removeVanillaCommands()
         CommandManager.syncCommands()
     }
 

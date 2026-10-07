@@ -41,3 +41,12 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+### Local test servers ###
+/run/
+/run-purpur/
+/run-spigot/
+/.servers/
+
+### Local-only: bot tests and Claude notes ###
+/testing/
+/CLAUDE.md
